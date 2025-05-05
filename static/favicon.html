@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Favicon</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+            margin: 20px;
+        }
+        .instructions {
+            margin: 20px;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h2>Favicon Generator</h2>
+        <p>This page will help you create a simple favicon for your grocery management system.</p>
+        <ol>
+            <li>Click the "Generate Favicon" button below</li>
+            <li>Right-click on the canvas and select "Save image as..."</li>
+            <li>Save the file as "favicon.ico" in your static directory</li>
+        </ol>
+    </div>
+    <canvas id="faviconCanvas" width="32" height="32"></canvas>
+    <br>
+    <button onclick="generateFavicon()">Generate Favicon</button>
+
+    <script>
+        function generateFavicon() {
+            const canvas = document.getElementById('faviconCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, 32, 32);
+            
+            // Draw background
+            ctx.fillStyle = '#4CAF50';
+            ctx.fillRect(0, 0, 32, 32);
+            
+            // Draw shopping cart
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(16, 16, 12, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw text
+            ctx.fillStyle = '#4CAF50';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('G', 16, 16);
+        }
+    </script>
+</body>
+</html> 

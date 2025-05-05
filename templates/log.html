@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Grocery Management</title>
+
+    <!-- Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-bootstrap.css') }}">
+
+    <!-- Enhanced Styles CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/enhanced-styles.css') }}">
+
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #015551;
+            --secondary-color: #57B4BA;
+            --accent-color: #FFB020;
+            --light-color: #FDFBEE;
+            --dark-color: #333333;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        .bg-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .bg-element:nth-child(1) {
+            width: 150px;
+            height: 150px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bg-element:nth-child(2) {
+            width: 100px;
+            height: 100px;
+            top: 70%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+
+        .bg-element:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            top: 40%;
+            left: 60%;
+            animation-delay: 4s;
+        }
+
+        .bg-element:nth-child(4) {
+            width: 120px;
+            height: 120px;
+            top: 80%;
+            left: 20%;
+            animation-delay: 6s;
+        }
+
+        .bg-element:nth-child(5) {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            left: 40%;
+            animation-delay: 8s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+            }
+        }
+
+        .login-container {
+            width: 450px;
+            padding: 40px;
+            border-radius: 20px;
+            background: var(--light-color);
+            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            background-size: 200% 100%;
+            animation: gradient 3s linear infinite;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-header i {
+            margin-right: 15px;
+            color: var(--secondary-color);
+            font-size: 2.5rem;
+        }
+
+        .login-header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            transition: width 0.3s ease;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            font-size: 1.1rem;
+            padding: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(87, 180, 186, 0.25);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .input-group-text {
+            border-radius: 12px;
+            background: var(--secondary-color);
+            color: white;
+            transition: all 0.3s ease;
+            border: none;
+            padding: 0 20px;
+        }
+
+        .btn-primary {
+            border-radius: 12px;
+            background: var(--primary-color);
+            border: none;
+            font-size: 1.2rem;
+            padding: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn-primary:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        #password {
+            border: 2px solid #e0e0e0;
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid #e0e0e0;
+            border-left: none;
+            background: #ffffff;
+            color: var(--secondary-color);
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+            padding: 0 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .alert {
+            animation: slideInDown 0.5s ease forwards;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-danger {
+            background-color: #ff6b6b;
+            color: white;
+        }
+
+        .alert-success {
+            background-color: #51cf66;
+            color: white;
+        }
+
+        .alert-warning {
+            background-color: #ffd43b;
+            color: #333;
+        }
+
+        .alert-info {
+            background-color: #339af0;
+            color: white;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .input-group:focus-within .input-group-text {
+            background: var(--primary-color);
+        }
+
+        .input-group:focus-within .form-control {
+            border-color: var(--primary-color);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .remember-me input {
+            margin-right: 10px;
+            accent-color: var(--secondary-color);
+        }
+
+        .remember-me label {
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .login-footer a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .login-footer a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        /* Loading animation for button */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-top: -10px;
+            margin-left: -10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .login-container {
+                width: 90%;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body class="login-page">
+
+    <!-- Animated background elements -->
+    <div class="bg-elements">
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+    </div>
+
+    <div class="login-container animate__animated animate__fadeIn">
+        <div class="login-header">
+            <i class="fas fa-store"></i> Grocery Store
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} animate__animated animate__shakeX">
+            <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'danger' %}fa-exclamation-circle{% elif category == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Login Form -->
+        <form method="POST" action="/login" id="loginForm">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                    required>
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100" id="loginBtn">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+        
+        // Form submission animation
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.classList.add('btn-loading');
+            loginBtn.innerHTML = '';
+            
+            // Simulate loading for demo purposes
+            // In a real app, this would happen naturally during form submission
+            setTimeout(() => {
+                loginBtn.classList.remove('btn-loading');
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Login';
+            }, 1500);
+        });
+        
+        // Remove the floating animation for the login container
+        /* document.querySelector('.login-container').addEventListener('mouseover', function() {
+            this.classList.add('animate__animated', 'animate__pulse');
+        });
+        
+        document.querySelector('.login-container').addEventListener('animationend', function() {
+            this.classList.remove('animate__animated', 'animate__pulse');
+        }); */
+        
+        // Add ripple effect to the login button
+        document.getElementById('loginBtn').addEventListener('click', function(e) {
+            const button = e.currentTarget;
+            const ripple = document.createElement('span');
+            
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+            
+            ripple.classList.add('ripple');
+            button.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+        
+        // Handle Remember Me functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there's a saved username in localStorage
+            const savedUsername = localStorage.getItem('rememberedUsername');
+            if (savedUsername) {
+                document.getElementById('username').value = savedUsername;
+                document.getElementById('remember').checked = true;
+            }
+            
+            // Save username when form is submitted if Remember Me is checked
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                const rememberCheckbox = document.getElementById('remember');
+                const usernameInput = document.getElementById('username');
+                
+                if (rememberCheckbox.checked) {
+                    localStorage.setItem('rememberedUsername', usernameInput.value);
+                } else {
+                    localStorage.removeItem('rememberedUsername');
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

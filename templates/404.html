@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - Grocery Management</title>
+    <!-- Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-bootstrap.css') }}">
+    <!-- Enhanced Styles CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/enhanced-styles.css') }}">
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #015551, #57B4BA);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+        }
+        .error-container {
+            width: 90%;
+            max-width: 600px;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .error-content {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+        .error-icon {
+            font-size: 6rem;
+            color: #FE4F2D;
+            margin-bottom: 1.5rem;
+        }
+        .error-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+        .error-message {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .back-btn {
+            padding: 0.75rem 2.5rem;
+            font-size: 1.2rem;
+            background-color: #015551;
+            border: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background-color: #013e3b;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .back-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container error-container">
+        <div class="error-content animate__animated animate__fadeIn">
+            <i class="fas fa-exclamation-circle error-icon animate__animated animate__bounceIn" style="animation-delay: 0.3s"></i>
+            <h1 class="error-title animate__animated animate__fadeInDown" style="animation-delay: 0.5s">404 - Page Not Found</h1>
+            <p class="error-message animate__animated animate__fadeInUp" style="animation-delay: 0.7s">The page you're looking for doesn't exist or has been moved.</p>
+            <a href="{{ url_for('redirect_role') }}" class="btn btn-primary back-btn animate__animated animate__pulse animate__infinite animate__slower">
+                <i class="fas fa-home me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

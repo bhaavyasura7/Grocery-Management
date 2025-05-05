@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <!-- Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-bootstrap.css') }}">
+    <!-- Enhanced Styles CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/enhanced-styles.css') }}">
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        .table-low-stock {
+            background-color: #FE4F2D !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+        .modal {
+            z-index: 1050;
+        }
+
+        .modal-backdrop {
+            z-index: 1040;
+        }
+
+        .modal-dialog {
+            margin: 1.75rem auto;
+            max-width: 500px;
+        }
+
+        .modal-content {
+            border-radius: 0.3rem;
+            padding: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand animate__animated animate__fadeIn" href="/admin">
+                <i class="fas fa-store animated-icon me-2"></i>Admin Dashboard
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link animate__animated animate__fadeIn" style="animation-delay: 0.1s"
+                            href="/admin/cashiers">
+                            <i class="fas fa-users animated-icon me-1"></i> Manage Cashiers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active animate__animated animate__fadeIn" style="animation-delay: 0.2s"
+                            href="/admin/inventory">
+                            <i class="fas fa-boxes animated-icon me-1"></i> Inventory Management
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link animate__animated animate__fadeIn" style="animation-delay: 0.3s"
+                            href="/admin/bills">
+                            <i class="fas fa-receipt animated-icon me-1"></i> Today's Bills
+                        </a>
+                    </li>
+                </ul>
+                <a href="/logout" class="btn btn-danger animate__animated animate__fadeIn"
+                    style="animation-delay: 0.4s">
+                    <i class="fas fa-sign-out-alt animated-icon me-1"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <select class="form-select" onchange="window.location.href=this.value">
+                    <option value="/admin/inventory" {% if not request.args.get('sort') %}selected{% endif %}>Default
+                        Order</option>
+                    <option value="/admin/inventory?sort=id_asc" {% if request.args.get('sort')=='id_asc' %}selected{%
+                        endif %}>ID (Ascending)</option>
+                    <option value="/admin/inventory?sort=id_desc" {% if request.args.get('sort')=='id_desc' %}selected{%
+                        endif %}>ID (Descending)</option>
+                    <option value="/admin/inventory?sort=name_asc" {% if request.args.get('sort')=='name_asc'
+                        %}selected{% endif %}>Name (A-Z)</option>
+                    <option value="/admin/inventory?sort=name_desc" {% if request.args.get('sort')=='name_desc'
+                        %}selected{% endif %}>Name (Z-A)</option>
+                    <option value="/admin/inventory?sort=stock_asc" {% if request.args.get('sort')=='stock_asc'
+                        %}selected{% endif %}>Stock (Low to High)</option>
+                    <option value="/admin/inventory?sort=stock_desc" {% if request.args.get('sort')=='stock_desc'
+                        %}selected{% endif %}>Stock (High to Low)</option>
+                </select>
+            </div>
+            <div class="col-md-3 ms-auto">
+                <input type="text" class="form-control" id="searchName" placeholder="Search by name"
+                    onkeyup="searchByName()">
+            </div>
+        </div>
+
+        <div class="card mt-4 animate__animated animate__fadeInDown">
+            <div class="card-header">
+                <h4 style="color:white"><i class="fas fa-plus-circle me-2"></i>Add New Item</h4>
+            </div>
+            <div class="card-body">
+                <form action="/admin/add_item" method="POST">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="name" class="form-label">Item Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="quantity" class="form-label">Initial Quantity</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-cubes"></i></span>
+                                <input type="number" class="form-control" id="quantity" name="quantity" min="0"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="price" class="form-label">Price</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-rupee-sign"></i></span>
+                                <input type="number" class="form-control" id="price" name="price" step="0.01" min="0"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="threshold" class="form-label">Stock Threshold</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
+                                <input type="number" class="form-control" id="threshold" name="threshold" min="0"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus-circle me-1"></i> Add Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Item Name</th>
+                        <th>Current Stock</th>
+                        <th>Threshold</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory %}
+                    <tr {% if item.quantity <=item.threshold %}class="table-low-stock" {% endif %}>
+                        <td>{{ item.id }}</td>
+                        <td>
+                            {{ item.name }}
+                            {% if item.quantity <= item.threshold %} <span class="badge bg-danger">Low Stock</span>
+                                {% endif %}
+                        </td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.threshold }}</td>
+                        <td>₹{{ item.price }}</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#updateModal{{ item.id }}">
+                                Update
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm ms-1" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal{{ item.id }}">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Update Modals -->
+    {% for item in inventory %}
+    <div class="modal fade" id="updateModal{{ item.id }}" tabindex="-1" aria-labelledby="updateModalLabel{{ item.id }}"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateModalLabel{{ item.id }}">Update Stock - {{ item.name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/admin/update_stock" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <div class="mb-3">
+                            <label for="new_quantity{{ item.id }}" class="form-label">New Quantity</label>
+                            <input type="number" class="form-control" id="new_quantity{{ item.id }}" name="new_quantity"
+                                value="{{ item.quantity }}" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_threshold{{ item.id }}" class="form-label">Stock Threshold</label>
+                            <input type="number" class="form-control" id="new_threshold{{ item.id }}"
+                                name="new_threshold" value="{{ item.threshold }}" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_price{{ item.id }}" class="form-label">New Price</label>
+                            <input type="number" class="form-control" id="new_price{{ item.id }}" name="new_price"
+                                step="0.01" value="{{ item.price }}" min="0" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Delete Modals -->
+    {% for item in inventory %}
+    <div class="modal fade" id="deleteModal{{ item.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ item.id }}"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel{{ item.id }}">Delete Item - {{ item.name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this item?
+                </div>
+                <div class="modal-footer">
+                    <form action="/admin/delete_item" method="POST">
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Search functionality
+            window.searchByName = function () {
+                const input = document.getElementById('searchName').value.toLowerCase().replace(/\s+/g, ' ').trim();
+                const rows = document.querySelectorAll('tbody tr');
+
+                rows.forEach(row => {
+                    const itemName = row.querySelector('td:nth-child(2)').textContent.toLowerCase().replace(/\s+/g, ' ').trim();
+                    if (itemName.includes(input) || input.split(' ').every(word => itemName.includes(word))) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            };
+
+            // Handle form validations
+            const forms = document.querySelectorAll('form');
+            forms.forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    if (!form.checkValidity()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        form.classList.add('was-validated');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
